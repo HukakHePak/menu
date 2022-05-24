@@ -5,22 +5,26 @@ import { MenuItem } from "./MenuItem";
 const StyledMenu = styled.div`
   background: #b0d9e8;
   margin: auto;
-  gap: 20px;
   display: flex;
   flex-direction: column;
-  font-size: 28px;
   position: relative;
+  user-select: none;
+  word-wrap: break-word;
+
+  & > div {
+    cursor: pointer;
+  }
 `;
 
-function getElementByPosition(container, position) {
-  const itemsCount = container.current.children.length;
-  const itemHeight = container.current.clientHeight;
-}
-
 export function Menu(props) {
-  const { list, onChange, gap, children } = props;
+  const { list, onChange, gap, childComponent } = props;
 
   const container = useRef(null);
+
+  const [selected, setSelected] = useState();
+  const [mouseY, setMouseY] = useState(0);
+  const [mouseStart, setMouseStart] = useState(0);
+  const [ms, setMs] = useState(0);
 
   const [itemsPositions, setItemsPosition] = useState([]);
 
@@ -31,28 +35,97 @@ export function Menu(props) {
     //   setItemsPosition(
     //     Array.from(container.current.children).map((item) => item.offsetTop)
     //   );
-
     //   console.log(itemsPositions);
-  }, [itemsPositions]);
+    //if(selected?.index)
+  }, [selected]);
 
-  function mouseMoveHandler(event) {}
+  function mouseMoveHandler(event) {
+    if (!selected) return;
 
-  function clickHandler(event) {
-    console.log(event);
+    const { clientY } = event;
+
+    setMouseY(ms + clientY - mouseStart);
+
+    if (mouseY > selected.top + selected.height / 2) {
+      swapElems(selected.index + 1);
+      return;
+    }
+
+    if (mouseY < selected.top - selected.height / 2) {
+      swapElems(selected.index - 1);
+    }
+  }
+
+  function clickHandler(event, index, data) {
+    console.log(event, index);
+
+    setSelected({
+      top: event.target.offsetTop,
+      //left: event.target.offsetLeft,
+      height: event.target.clientHeight,
+      index,
+      ...data,
+    });
+    setMouseY(event.target.offsetTop);
+    setMouseStart(event.clientY);
+    setMs(event.target.offsetTop);
   }
 
   function doubleClickHandler(event) {}
 
+  function swapElems(swappedIndex) {
+    if (swappedIndex < 0 || swappedIndex >= list.length) return;
+
+    const swappedList = [...list];
+    swappedList[selected.index] = list[swappedIndex];
+    swappedList[swappedIndex] = list[selected.index];
+    onChange(swappedList);
+
+    const { offsetTop, clientHeight } =
+      container.current.children[swappedIndex];
+    setSelected({
+      ...selected,
+      index: swappedIndex,
+      height: clientHeight,
+      top: offsetTop,
+    });
+  }
+
   return (
     <StyledMenu
-    //   ref={container}
-    //   onClick={clickHandler}
-    //   onMouseMove={mouseMoveHandler}
-    //   onDoubleClick={doubleClickHandler}
+      ref={container}
+      onMouseMove={mouseMoveHandler}
+      onMouseUp={() => setSelected()}
+      onMouseLeave={() => setSelected()}
     >
-      {list.map(([key, data]) => {
-        return <MenuItem key={key} data={data} onDbClick onDrag />;
+      {list.map(([key, data], i) => {
+        const { name, number, isActive } = data;
+
+        return (
+          <div
+            key={key}
+            onMouseDown={(e) => clickHandler(e, i, data)}
+            onDoubleClick={() => doubleClickHandler(data)}
+            //onTouchStart={console.log}
+
+            style={i === selected?.index ? { visibility: "hidden" } : {}}
+          >
+            {number + ". " + name} // paste component
+          </div>
+        );
       })}
+      {selected && (
+        <div
+          style={{
+            position: "absolute",
+            background: "white",
+            width: "100%",
+            top: mouseY,
+          }}
+        >
+          {selected?.number + ". " + selected?.name}
+        </div>
+      )}
     </StyledMenu>
   );
 }
