@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import styled from "styled-components";
 
 const StyledMenu = styled.div`
@@ -9,21 +9,28 @@ const StyledMenu = styled.div`
   position: relative;
   user-select: none;
   word-wrap: break-word;
+  box-sizing: border-box;
 
   & > div {
     cursor: pointer;
   }
 `;
 
+const senseTime = 500;
+const activeColor = "rgba(0, 0, 0, 0.38)";
+
 export function Menu(props) {
   const { list, onChange, style, children } = props;
 
   const container = useRef(null);
 
-  const [{ index, height, top, data }, setSelected] = useState({});
+  const [selected, setSelected] = useState({});
+  const { index, height, top, data, time, width } = selected;
   const [mouseY, setMouseY] = useState(0);
   const [mouseStart, setMouseStart] = useState(0);
   const [itemsPositions, setItemsPosition] = useState([]);
+
+  const childComponent = Array.isArray(children) && children.find((item) => typeof item === "function");
 
   function mouseMoveHandler({ clientY }) {
     if (index === undefined) return;
@@ -45,19 +52,32 @@ export function Menu(props) {
       Array.from(container.current.children).map((item) => item.offsetTop)
     );
 
+    const { offsetTop, clientHeight, clientWidth } = event.target;
+
     setSelected({
-      top: event.target.offsetTop,
-      height: event.target.clientHeight,
+      top: offsetTop,
+      height: clientHeight,
+      width: clientWidth,
       index,
       data,
+      time: new Date(),
     });
 
-    setMouseY(event.target.offsetTop);
+    setMouseY(offsetTop);
     setMouseStart(event.clientY);
   }
 
-  function doubleClickHandler(i, data) {
+  function mouseUpHandler() {
+    console.log(new Date() - time < senseTime)
 
+    if (new Date() - time < senseTime) {
+      const newList = [...list];
+      newList[index][1].isActive = !newList[index][1].isActive;
+
+      onChange(newList);
+    }
+
+    setSelected({});
   }
 
   function swapElems(swappedIndex) {
@@ -70,54 +90,53 @@ export function Menu(props) {
     onChange(swappedList);
 
     setSelected({
-      data,
-      height,
-      top,
+      ...selected,
       index: swappedIndex,
     });
+  }
+
+  function touchToMouse(event) {
+    const { clientY, target } = event.changedTouches[0];
+    return { clientY, target };
   }
 
   return (
     <StyledMenu
       ref={container}
       onMouseMove={mouseMoveHandler}
-      onMouseUp={() => setSelected({})}
-      onMouseLeave={() => setSelected({})}
-      style={
-        container?.current
-          ? {
-              width: container?.current.clientWidth,
-              height: container?.current.clientHeight,
-              ...style,
-            }
-          : style
-      }
+      onTouchMove={(e) => mouseMoveHandler(touchToMouse(e))}
+      onMouseUp={mouseUpHandler}
+      onMouseLeave={mouseUpHandler}
+      onTouchEnd={() => setSelected({})}
+      style={style}
     >
       {list.map(([key, data], i) => {
         return (
           <div
             key={key}
             onMouseDown={(e) => clickHandler(e, i, data)}
-            onDoubleClick={() => doubleClickHandler(i, data)}
-            //onTouchStart={console.log}
-            style={
-              index !== undefined
-                ? {
-                    position: "absolute",
-
-                    width: container.current.clientWidth,
-                    top: i === index ? mouseY : itemsPositions[i],
-                    zIndex: +(i === index),
-                  }
-                : {}
-            }
+            onTouchStart={(e) => clickHandler(touchToMouse(e), i, data)}
+            style={{
+              ...(i === index && { visibility: "hidden" }),
+              color: data.isActive ? "black" : activeColor,
+            }}
           >
-            {
-              children.find((item) => typeof item === "function")(data) // сделать проверку на существование
-            }
+            {childComponent ? childComponent(data) : data.name}
           </div>
         );
       })}
+      {index !== undefined && (
+        <div
+          style={{
+            position: "absolute",
+            background: "white",
+            width,
+            top: mouseY,
+          }}
+        >
+          {childComponent ? childComponent(data) : data.name}
+        </div>
+      )}
     </StyledMenu>
   );
 }

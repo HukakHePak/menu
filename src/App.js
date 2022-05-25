@@ -7,10 +7,6 @@ import menu from './menu.json';
 function App() {
   const [list, setList] = useState(menu);
 
-  const elem = <MenuItem />;
-
-  //console.log(elem.type())
-
   return <div className="App">
     <Menu list={list} onChange={setList}> { item => <MenuItem data={item}/>} </Menu>
   </div>;
