@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import styled from "styled-components";
+import { getComponent } from "../helpers/getComponent";
+import { swapElements } from "../helpers/swapElements";
+import { touchToMouse } from "../helpers/touchToMouse";
 
 const StyledMenu = styled.div`
   background: #b0d9e8;
@@ -16,11 +19,8 @@ const StyledMenu = styled.div`
   }
 `;
 
-const senseTime = 500;
-const activeColor = "rgba(0, 0, 0, 0.38)";
-
 export function Menu(props) {
-  const { list, onChange, style, children } = props;
+  const { list, onChange, style, children, senseTime = 500, activeColor = "rgba(0, 0, 0, 0.38)" } = props;
 
   const container = useRef(null);
 
@@ -30,7 +30,7 @@ export function Menu(props) {
   const [mouseStart, setMouseStart] = useState(0);
   const [itemsPositions, setItemsPosition] = useState([]);
 
-  const childComponent = Array.isArray(children) && children.find((item) => typeof item === "function");
+  const childComponent = getComponent(children);
 
   function mouseMoveHandler({ clientY }) {
     if (index === undefined) return;
@@ -45,6 +45,17 @@ export function Menu(props) {
     if (mouseY < itemsPositions[index] - height / 2) {
       swapElems(index - 1);
     }
+  }
+
+  function swapElems(swap) {
+    if (swap < 0 || swap >= list.length) return;
+    
+    onChange(swapElements(list, index, swap));
+
+    setSelected({
+      ...selected,
+      index: swap,
+    });
   }
 
   function clickHandler(event, index, data) {
@@ -68,8 +79,6 @@ export function Menu(props) {
   }
 
   function mouseUpHandler() {
-    console.log(new Date() - time < senseTime)
-
     if (new Date() - time < senseTime) {
       const newList = [...list];
       newList[index][1].isActive = !newList[index][1].isActive;
@@ -78,26 +87,6 @@ export function Menu(props) {
     }
 
     setSelected({});
-  }
-
-  function swapElems(swappedIndex) {
-    if (swappedIndex < 0 || swappedIndex >= list.length) return;
-
-    const swappedList = [...list];
-    swappedList[index] = list[swappedIndex];
-    swappedList[swappedIndex] = list[index];
-
-    onChange(swappedList);
-
-    setSelected({
-      ...selected,
-      index: swappedIndex,
-    });
-  }
-
-  function touchToMouse(event) {
-    const { clientY, target } = event.changedTouches[0];
-    return { clientY, target };
   }
 
   return (
@@ -131,6 +120,7 @@ export function Menu(props) {
             position: "absolute",
             background: "white",
             width,
+            color: data.isActive ? "black" : activeColor,
             top: mouseY,
           }}
         >
