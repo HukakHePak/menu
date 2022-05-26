@@ -33,10 +33,9 @@ export function Menu(props) {
   const container = useRef(null);
 
   const [selected, setSelected] = useState({});
-  const { index, height, top, data, time, width } = selected;
+  const { index, height, top, data, time, width, currentTop } = selected;
   const [mouseY, setMouseY] = useState(0);
   const [mouseStart, setMouseStart] = useState(0);
-  const [itemsPositions, setItemsPosition] = useState([]);
 
   const childComponent = getComponent(children);
 
@@ -45,12 +44,12 @@ export function Menu(props) {
 
     setMouseY(top + clientY - mouseStart);
 
-    if (mouseY > itemsPositions[index] + height) {
+    if (mouseY > currentTop + height) {
       swapElems(index + 1);
       return;
     }
 
-    if (mouseY < itemsPositions[index] - height) {
+    if (mouseY < currentTop - height) {
       swapElems(index - 1);
     }
   }
@@ -63,18 +62,16 @@ export function Menu(props) {
     setSelected({
       ...selected,
       index: swap,
+      currentTop: container.current.children[swap].offsetTop
     });
   }
 
   function clickHandler(event, index, data) {
-    setItemsPosition(
-      Array.from(container.current.children).map((item) => item.offsetTop)
-    );
-
     const { offsetTop, clientHeight, clientWidth } = event.target;
 
     setSelected({
       top: offsetTop,
+      currentTop: offsetTop,
       height: clientHeight,
       width: clientWidth,
       index,
