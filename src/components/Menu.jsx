@@ -5,7 +5,6 @@ import { swapElements } from "../helpers/swapElements";
 import { touchToMouse } from "../helpers/touchToMouse";
 
 const StyledMenu = styled.div`
-  background: #b0d9e8;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -37,12 +36,12 @@ export function Menu(props) {
 
     setMouseY(top + clientY - mouseStart);
 
-    if (mouseY > itemsPositions[index] + height / 2) {
+    if (mouseY > itemsPositions[index] + height) {
       swapElems(index + 1);
       return;
     }
 
-    if (mouseY < itemsPositions[index] - height / 2) {
+    if (mouseY < itemsPositions[index] - height) {
       swapElems(index - 1);
     }
   }
@@ -118,7 +117,6 @@ export function Menu(props) {
         <div
           style={{
             position: "absolute",
-            background: "white",
             width,
             color: data.isActive ? "black" : activeColor,
             top: mouseY,
