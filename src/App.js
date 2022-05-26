@@ -1,40 +1,30 @@
 import { useState } from "react";
-import { Menu } from "./components/Menu";
 import menu from "./menu.json";
 import { StyledMenuItem } from "./styled/StyledMenuItem";
 import cityImg from "./images/city-min.jpg";
 import { StyledBgMask } from "./styled/StyledBgMask";
 import { Background } from "./components/Background";
+import { StyledMenu } from "./styled/StyledMenu";
 
-const style = {
-  overflow: "hidden",
-  width: "100%",
-  height: "100vh",
-  display: "flex",
-};
 
 function App() {
   const [list, setList] = useState(menu);
 
   return (
-    <div className="App" style={style}>
-      <Background source={cityImg} style={{ filter: "grayscale(1)" }} mask={<StyledBgMask />} />
-
-      <Menu
-        list={list}
-        onChange={setList}
-        style={{
-          background: "rgba(43, 48, 52, 0.75)",
-          border: '3px solid #fe624b',
-          gap: 20,
-          padding: 20,
-          borderRadius: 10 /* fetch into theme */,
-        }}
-      >
-        {({ isActive, name }) => (
-          <StyledMenuItem active={isActive}> {name} </StyledMenuItem>
-        )}
-      </Menu>
+    <div className="App">
+      <Background
+        fixed
+        source={cityImg}
+        style={{ filter: "grayscale(1)" }}
+        mask={<StyledBgMask />}
+      />
+      <div style={{ height: 'fit-content', padding: 40, margin: 'auto', width: '100%' }}>
+        <StyledMenu list={list} onChange={setList}>
+          {({ isActive, name }) => (
+            <StyledMenuItem active={isActive}> {name} </StyledMenuItem>
+          )}
+        </StyledMenu>
+      </div>
     </div>
   );
 }

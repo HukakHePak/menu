@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 const StyledBackground = styled.div`
-  position: absolute;
   width: 100%;
   height: 100%;
   background-size: cover;
@@ -9,10 +8,16 @@ const StyledBackground = styled.div`
 `;
 
 export function Background(props) {
-  const { source, style, mask } = props;
+  const { source, style, mask, fixed } = props;
 
   return (
-    <StyledBackground style={{ ...style, backgroundImage: `url(${source})` }}>
+    <StyledBackground
+      style={{
+        ...style,
+        backgroundImage: `url(${source})`,
+        position: fixed ? "fixed" : "absolute",
+      }}
+    >
       {mask && mask}
     </StyledBackground>
   );

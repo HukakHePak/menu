@@ -5,14 +5,14 @@ import { swapElements } from "../helpers/swapElements";
 import { touchToMouse } from "../helpers/touchToMouse";
 
 const StyledMenu = styled.div`
-  margin: auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
   position: relative;
-  user-select: none;
   word-wrap: break-word;
   box-sizing: border-box;
   touch-action: none;
+  user-select: none;
 
   & > div {
     cursor: pointer;
@@ -20,7 +20,15 @@ const StyledMenu = styled.div`
 `;
 
 export function Menu(props) {
-  const { list, onChange, style, children, senseTime = 200, activeColor = "rgba(0, 0, 0, 0.38)" } = props;
+  const {
+    className,
+    list,
+    onChange,
+    style,
+    children,
+    senseTime = 200,
+    activeColor = "rgba(0, 0, 0, 0.38)",
+  } = props;
 
   const container = useRef(null);
 
@@ -49,7 +57,7 @@ export function Menu(props) {
 
   function swapElems(swap) {
     if (swap < 0 || swap >= list.length) return;
-    
+
     onChange(swapElements(list, index, swap));
 
     setSelected({
@@ -91,6 +99,7 @@ export function Menu(props) {
 
   return (
     <StyledMenu
+      className={className}
       ref={container}
       onMouseMove={mouseMoveHandler}
       onTouchMove={(e) => mouseMoveHandler(touchToMouse(e))}
@@ -108,6 +117,8 @@ export function Menu(props) {
             style={{
               ...(i === index && { visibility: "hidden" }),
               color: data.isActive ? "black" : activeColor,
+              width: "100%",
+              height: "100%",
             }}
           >
             {childComponent ? childComponent(data) : data.name}
@@ -119,6 +130,7 @@ export function Menu(props) {
           style={{
             position: "absolute",
             width,
+            height,
             color: data.isActive ? "black" : activeColor,
             top: mouseY,
           }}
