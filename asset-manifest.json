@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/menu/static/css/main.3a5d4ade.css",
+    "main.js": "/menu/static/js/main.4d12ac32.js",
+    "static/media/city-min.jpg": "/menu/static/media/city-min.50b20d07b9e2c3a02536.jpg",
+    "index.html": "/menu/index.html",
+    "main.3a5d4ade.css.map": "/menu/static/css/main.3a5d4ade.css.map",
+    "main.4d12ac32.js.map": "/menu/static/js/main.4d12ac32.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.3a5d4ade.css",
+    "static/js/main.4d12ac32.js"
+  ]
+}
