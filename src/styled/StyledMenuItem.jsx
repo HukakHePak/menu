@@ -5,8 +5,8 @@ export const StyledMenuItem = styled.div`
   padding: 20px;
   width: 300px;
   text-align: center;
-  color: white;
-  background: #fe624b;
+  color: ${props => props.active ? 'white' : '#515659'};
+  background: ${props => props.active ? '#fe624b' : '#34393f'};
   border-radius: 10px;
   transition: 0.1s;
   

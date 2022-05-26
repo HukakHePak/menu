@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu } from "./components/Menu";
 import menu from "./menu.json";
 import { StyledMenuItem } from "./styled/StyledMenuItem";
-import cityImg from "./images/city.jpg";
+import cityImg from "./images/city-min.jpg";
 import { StyledBgMask } from "./styled/StyledBgMask";
 import { Background } from "./components/Background";
 

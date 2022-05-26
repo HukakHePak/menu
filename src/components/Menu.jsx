@@ -12,6 +12,7 @@ const StyledMenu = styled.div`
   user-select: none;
   word-wrap: break-word;
   box-sizing: border-box;
+  touch-action: none;
 
   & > div {
     cursor: pointer;
@@ -19,7 +20,7 @@ const StyledMenu = styled.div`
 `;
 
 export function Menu(props) {
-  const { list, onChange, style, children, senseTime = 500, activeColor = "rgba(0, 0, 0, 0.38)" } = props;
+  const { list, onChange, style, children, senseTime = 200, activeColor = "rgba(0, 0, 0, 0.38)" } = props;
 
   const container = useRef(null);
 
